@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Trophy, Flame, Target, TrendingUp, Loader2, Lock, Calendar, Award, Zap, BarChart3, Timer, Gauge } from 'lucide-react';
 import type { Page } from '@/components/Navbar';
 import { getProfileId, formatMs, DAILY_LIMIT, MARKS_PER_CORRECT, type Profile, type UserStats, type DailyProgress } from '@/lib/supabase';
-import { getProfile, getUserStats } from '@/lib/db';
+import { getDailyProgress, getProfile, getUserStats } from '@/lib/db';
 
 interface Props {
   profileId: string | null;
@@ -30,8 +30,12 @@ export function StatusPage({ profileId, onNavigate }: Props) {
         const st = await getUserStats(pid);
         setStats(st as UserStats | null);
 
-        setDaily([]);
-        setTodayCount(0);
+        const progress = await getDailyProgress(pid);
+        setDaily(progress);
+
+        const today = new Date().toISOString().split('T')[0];
+        const todayProgress = progress.find((dp) => dp.date === today);
+        setTodayCount(todayProgress?.questions_answered ?? 0);
       } finally {
         setLoading(false);
       }

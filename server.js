@@ -117,24 +117,6 @@ async function initializeDatabase() {
       )
     `);
 
-    const [questionCountRows] = await admin.query('SELECT COUNT(*) AS count FROM questions');
-    const questionCount = Number(questionCountRows[0]?.count ?? 0);
-
-    if (questionCount === 0) {
-      await admin.query(`
-        INSERT INTO questions (domain, question, option_a, option_b, option_c, option_d, correct_answer) VALUES
-        ('Programming', 'Which keyword is used to define a constant in JavaScript?', 'var', 'let', 'const', 'static', 'C'),
-        ('Programming', 'What does OOP stand for?', 'Object Oriented Programming', 'Open Output Protocol', 'Online Operation Process', 'Ordered Object Pattern', 'A'),
-        ('Networking', 'Which port is used by HTTPS by default?', '80', '21', '443', '8080', 'C'),
-        ('Networking', 'Which protocol is connectionless?', 'TCP', 'UDP', 'HTTP', 'FTP', 'B'),
-        ('Databases', 'What does SQL stand for?', 'Simple Query Language', 'Structured Query Language', 'Standard Query Logic', 'Sequential Query Language', 'B'),
-        ('Databases', 'Which clause filters rows in SQL?', 'ORDER BY', 'GROUP BY', 'WHERE', 'HAVING', 'C'),
-        ('Web Development', 'What does HTML stand for?', 'Hyper Text Markup Language', 'High Tech Modern Language', 'Home Tool Markup Language', 'Hyperlink Text Management', 'A'),
-        ('Web Development', 'Which React hook is used for state management?', 'useEffect', 'useState', 'useRef', 'useMemo', 'B'),
-        ('Cybersecurity', 'What does VPN stand for?', 'Virtual Private Network', 'Verified Public Node', 'Visual Process Network', 'Virtual Process Node', 'A'),
-        ('Cybersecurity', 'Which attack tricks users into revealing credentials?', 'DDoS', 'Phishing', 'SQL Injection', 'Brute Force', 'B')
-      `);
-    }
   } finally {
     await admin.end();
   }
@@ -215,6 +197,20 @@ app.post('/daily-progress', async (req, res) => {
   }
 });
 
+
+app.get('/daily-progress/:profileId', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(
+      'SELECT * FROM daily_progress WHERE profile_id = ? ORDER BY date DESC',
+      [req.params.profileId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Daily progress fetch failed:', err);
+    res.status(500).json({ error: 'Failed to load daily progress', detail: err instanceof Error ? err.message : String(err) });
+  }
+});
+
 app.get('/user-stats/:profileId', async (req, res) => {
   try {
     const [rows] = await pool.execute('SELECT * FROM user_stats WHERE profile_id = ?', [req.params.profileId]);
@@ -241,8 +237,9 @@ app.put('/user-stats/:profileId', async (req, res) => {
 
 initializeDatabase()
   .then(() => {
-    app.listen(3001, () => {
-      console.log('MySQL backend listening on http://localhost:3001');
+    const port = Number(process.env.PORT || 3001);
+    app.listen(port, () => {
+      console.log(`MySQL backend listening on http://localhost:${port}`);
     });
   })
   .catch((err) => {

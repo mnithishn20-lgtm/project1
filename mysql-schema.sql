@@ -61,15 +61,3 @@ CREATE TABLE IF NOT EXISTS user_stats (
   fastest_correct_ms INT DEFAULT NULL,
   FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
 );
-
-INSERT INTO questions (domain, question, option_a, option_b, option_c, option_d, correct_answer) VALUES
-('Programming', 'Which keyword is used to define a constant in JavaScript?', 'var', 'let', 'const', 'static', 'C'),
-('Programming', 'What does OOP stand for?', 'Object Oriented Programming', 'Open Output Protocol', 'Online Operation Process', 'Ordered Object Pattern', 'A'),
-('Networking', 'Which port is used by HTTPS by default?', '80', '21', '443', '8080', 'C'),
-('Networking', 'Which protocol is connectionless?', 'TCP', 'UDP', 'HTTP', 'FTP', 'B'),
-('Databases', 'What does SQL stand for?', 'Simple Query Language', 'Structured Query Language', 'Standard Query Logic', 'Sequential Query Language', 'B'),
-('Databases', 'Which clause filters rows in SQL?', 'ORDER BY', 'GROUP BY', 'WHERE', 'HAVING', 'C'),
-('Web Development', 'What does HTML stand for?', 'Hyper Text Markup Language', 'High Tech Modern Language', 'Home Tool Markup Language', 'Hyperlink Text Management', 'A'),
-('Web Development', 'Which React hook is used for state management?', 'useEffect', 'useState', 'useRef', 'useMemo', 'B'),
-('Cybersecurity', 'What does VPN stand for?', 'Virtual Private Network', 'Verified Public Node', 'Visual Process Network', 'Virtual Process Node', 'A'),
-('Cybersecurity', 'Which attack tricks users into revealing credentials?', 'DDoS', 'Phishing', 'SQL Injection', 'Brute Force', 'B');
