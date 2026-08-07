@@ -11,19 +11,9 @@ import {
   clearSessionTimes,
   getSessionTimes,
   type Question,
-  type QuizAttempt,
 } from '@/lib/supabase';
-import { getQuestionsByDomain, saveAttempt, saveDailyProgress, saveUserStats, getUserStats } from '@/lib/db';
-
-const DOMAIN_KEY = 'quiz_selected_domain';
-
-export function setQuizDomain(domain: string) {
-  localStorage.setItem(DOMAIN_KEY, domain);
-}
-
-function getQuizDomain(): string | null {
-  return localStorage.getItem(DOMAIN_KEY);
-}
+import { getDailyProgress, getQuestionsByDomain, saveAttempt, saveDailyProgress, saveUserStats, getUserStats } from '@/lib/db';
+import { getQuizDomain } from '@/lib/quizDomain';
 
 interface Props {
   profileId: string | null;
@@ -93,35 +83,33 @@ export function QuizPage({ profileId, onNavigate }: Props) {
       // Update user_stats (streak + totals)
       const stats = await getUserStats(pid);
 
-      const newTotalAnswered = (Number((stats as Record<string, unknown> | null)?.total_answered ?? 0)) + 1;
-      const newTotalCorrect = (Number((stats as Record<string, unknown> | null)?.total_correct ?? 0)) + (isCorrect ? 1 : 0);
-      const newTotalMarks = (Number((stats as Record<string, unknown> | null)?.total_marks ?? 0)) + totalMarksForQ;
+      const newTotalAnswered = (stats?.total_answered ?? 0) + 1;
+      const newTotalCorrect = (stats?.total_correct ?? 0) + (isCorrect ? 1 : 0);
+      const newTotalMarks = (stats?.total_marks ?? 0) + totalMarksForQ;
 
       let newStreak = 1;
       let longestStreak = 1;
       if (stats) {
-        const lastDate = String((stats as Record<string, unknown>).last_active_date ?? '');
+        const lastDate = stats.last_active_date ?? '';
         if (lastDate) {
           const yesterday = new Date();
           yesterday.setDate(yesterday.getDate() - 1);
           const yStr = yesterday.toISOString().split('T')[0];
           if (lastDate === yStr) {
-            newStreak = Number((stats as Record<string, unknown>).current_streak ?? 0) + 1;
+            newStreak = (stats.current_streak ?? 0) + 1;
           } else if (lastDate === todayStr) {
-            newStreak = Number((stats as Record<string, unknown>).current_streak ?? 0);
+            newStreak = (stats.current_streak ?? 0);
           } else {
             newStreak = 1;
           }
         }
-        longestStreak = Math.max(Number((stats as Record<string, unknown>).longest_streak ?? 0), newStreak);
+        longestStreak = Math.max((stats.longest_streak ?? 0), newStreak);
       }
 
-      const newTotalTime = (Number((stats as Record<string, unknown> | null)?.total_time_ms ?? 0)) + Math.round(timeMs);
-      let newFastest = (stats as Record<string, unknown> | null)?.fastest_correct_ms ?? null;
-      if (isCorrect) {
-        if (newFastest === null || timeMs < newFastest) {
-          newFastest = Math.round(timeMs);
-        }
+      const newTotalTime = (stats?.total_time_ms ?? 0) + Math.round(timeMs);
+      let newFastest: number | null = stats?.fastest_correct_ms ?? null;
+      if (isCorrect && (newFastest === null || timeMs < newFastest)) {
+        newFastest = Math.round(timeMs);
       }
 
       await saveUserStats({
@@ -157,9 +145,8 @@ export function QuizPage({ profileId, onNavigate }: Props) {
 
     void (async () => {
       try {
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
-        const todayCount = 0;
+        const progress = await getDailyProgress(pid);
+        const todayCount = progress.find((dp) => dp.date === todayStr)?.questions_answered ?? 0;
         setAnsweredToday(todayCount);
 
         if (todayCount >= DAILY_LIMIT) {
@@ -169,7 +156,7 @@ export function QuizPage({ profileId, onNavigate }: Props) {
 
         const allQs = await getQuestionsByDomain(dom);
 
-        const remaining = (allQs ?? []).filter((q: Record<string, unknown>) => true);
+        const remaining = allQs ?? [];
         const shuffled = [...remaining].sort(() => Math.random() - 0.5);
         const available = Math.min(DAILY_LIMIT - todayCount, shuffled.length);
 

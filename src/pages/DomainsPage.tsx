@@ -3,7 +3,7 @@ import { Code2, Network, Database, Globe, ShieldCheck, ArrowRight, Loader2, Lock
 import type { Page } from '@/components/Navbar';
 import { DOMAINS, getProfileId, type Profile } from '@/lib/supabase';
 import { getProfile, getQuestions } from '@/lib/db';
-import { setQuizDomain } from '@/pages/QuizPage';
+import { setQuizDomain } from '@/lib/quizDomain';
 
 const ICONS: Record<string, typeof Code2> = {
   Code2, Network, Database, Globe, ShieldCheck,
@@ -35,8 +35,8 @@ export function DomainsPage({ profileId, onStartQuiz, onNavigate }: Props) {
 
         const qs = await getQuestions();
         const tally: Record<string, number> = {};
-        (qs ?? []).forEach((q: Record<string, unknown>) => {
-          const domain = String(q.domain ?? '');
+        (qs ?? []).forEach((q) => {
+          const domain = q.domain;
           tally[domain] = (tally[domain] ?? 0) + 1;
         });
         setCounts(tally);

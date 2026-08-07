@@ -1,4 +1,6 @@
-const API_BASE = 'http://localhost:3001';
+import type { DailyProgress, Profile, Question, UserStats } from '@/lib/supabase';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -6,7 +8,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
   });
   const text = await res.text();
-  let payload: any = null;
+  let payload: unknown = null;
   try {
     payload = text ? JSON.parse(text) : null;
   } catch {
@@ -14,10 +16,21 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   if (!res.ok) {
-    throw new Error(payload?.detail || payload?.error || text || 'Request failed');
+    const message = getErrorMessage(payload) || text || 'Request failed';
+    throw new Error(message);
   }
 
   return (payload ?? {}) as T;
+}
+
+function getErrorMessage(payload: unknown): string | null {
+  if (!payload || typeof payload !== 'object') return null;
+  const record = payload as Record<string, unknown>;
+  return typeof record.detail === 'string'
+    ? record.detail
+    : typeof record.error === 'string'
+      ? record.error
+      : null;
 }
 
 export async function createProfile(payload: Record<string, unknown>) {
@@ -28,15 +41,15 @@ export async function createProfile(payload: Record<string, unknown>) {
 }
 
 export async function getProfile(id: string) {
-  return request<Record<string, unknown> | null>(`/profiles/${id}`);
+  return request<Profile | null>(`/profiles/${id}`);
 }
 
 export async function getQuestions() {
-  return request<Record<string, unknown>[]>('/questions');
+  return request<Question[]>('/questions');
 }
 
 export async function getQuestionsByDomain(domain: string) {
-  return request<Record<string, unknown>[]>(`/questions/domain/${encodeURIComponent(domain)}`);
+  return request<Question[]>(`/questions/domain/${encodeURIComponent(domain)}`);
 }
 
 export async function saveAttempt(payload: Record<string, unknown>) {
@@ -54,7 +67,11 @@ export async function saveDailyProgress(payload: Record<string, unknown>) {
 }
 
 export async function getUserStats(profileId: string) {
-  return request<Record<string, unknown> | null>(`/user-stats/${profileId}`);
+  return request<UserStats | null>(`/user-stats/${profileId}`);
+}
+
+export async function getDailyProgress(profileId: string) {
+  return request<DailyProgress[]>(`/daily-progress/${profileId}`);
 }
 
 export async function saveUserStats(payload: Record<string, unknown>) {
