@@ -1,12 +1,32 @@
 import type { DailyProgress, Profile, Question, UserStats } from '@/lib/supabase';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001';
+const DEFAULT_DEV_API_BASE = 'http://localhost:3001';
+
+function getApiBase(): string {
+  const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (configuredBase) return configuredBase.replace(/\/$/, '');
+
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return window.location.origin;
+  }
+
+  return DEFAULT_DEV_API_BASE;
+}
+
+const API_BASE = getApiBase();
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${path}`, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unable to reach the server.';
+    throw new Error(`Unable to reach the API server at ${API_BASE}. ${message}`);
+  }
+
   const text = await res.text();
   let payload: unknown = null;
   try {
