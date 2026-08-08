@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Mail, Phone, GraduationCap, Briefcase, LayoutGrid, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
+import { User, Mail, Lock, Phone, GraduationCap, Briefcase, LayoutGrid, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
 import { DOMAINS, setProfileId } from '@/lib/supabase';
 import { createProfile } from '@/lib/db';
 
@@ -10,6 +10,7 @@ interface Props {
 interface FormData {
   name: string;
   email: string;
+  password: string;
   phone: string;
   education: string;
   experience: string;
@@ -23,6 +24,7 @@ export function ApplyPage({ onApplied }: Props) {
   const [form, setForm] = useState<FormData>({
     name: '',
     email: '',
+    password: '',
     phone: '',
     education: '',
     experience: '',
@@ -39,8 +41,10 @@ export function ApplyPage({ onApplied }: Props) {
 
   const validate = (): string | null => {
     if (!form.name.trim()) return 'Please enter your name.';
-    if (!form.email.trim()) return 'Please enter your email.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return 'Please enter a valid email address.';
+    if (!form.email.trim()) return 'Please enter your Gmail ID.';
+    if (!/^[^\s@]+@gmail\.com$/i.test(form.email)) return 'Please enter a valid Gmail ID.';
+    if (!form.password) return 'Please enter your password.';
+    if (form.password.length < 6) return 'Password must be at least 6 characters.';
     if (!form.education) return 'Please select your education level.';
     if (!form.experience) return 'Please select your experience level.';
     if (!form.domain_interest) return 'Please choose a domain of interest.';
@@ -59,7 +63,8 @@ export function ApplyPage({ onApplied }: Props) {
     try {
       const data = await createProfile({
         name: form.name.trim(),
-        email: form.email.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
         phone: form.phone.trim() || null,
         education: form.education,
         experience: form.experience,
@@ -86,8 +91,8 @@ export function ApplyPage({ onApplied }: Props) {
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
             <CheckCircle2 size={36} className="text-emerald-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white">Application Submitted!</h2>
-          <p className="mt-2 text-slate-400">Your profile is set up. Taking you to the domains page...</p>
+          <h2 className="text-2xl font-bold text-white">Registration Complete!</h2>
+          <p className="mt-2 text-slate-400">Your account is ready. Taking you to the domains page...</p>
           <Loader2 size={22} className="mx-auto mt-5 animate-spin text-emerald-400" />
         </div>
       </div>
@@ -103,10 +108,10 @@ export function ApplyPage({ onApplied }: Props) {
       <div className="mx-auto max-w-2xl px-5">
         <div className="text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1.5 text-xs font-semibold text-sky-300">
-            <User size={14} /> Application Form
+            <User size={14} /> Register Form
           </span>
-          <h1 className="mt-5 text-3xl font-bold text-white sm:text-4xl">Tell us about yourself</h1>
-          <p className="mt-3 text-slate-400">Fill in your details to create your quiz profile and get started.</p>
+          <h1 className="mt-5 text-3xl font-bold text-white sm:text-4xl">Create your account</h1>
+          <p className="mt-3 text-slate-400">Register with your Gmail ID and password to create your quiz profile.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-10 space-y-5 rounded-2xl border border-slate-800 bg-slate-900/40 p-6 sm:p-8">
@@ -122,13 +127,25 @@ export function ApplyPage({ onApplied }: Props) {
           </Field>
 
           {/* Email */}
-          <Field label="Email Address" icon={Mail} required>
+          <Field label="Gmail ID" icon={Mail} required>
             <input
               type="email"
               value={form.email}
               onChange={(e) => update('email', e.target.value)}
-              placeholder="e.g. arjun@example.com"
+              placeholder="e.g. arjun@gmail.com"
               className="input"
+            />
+          </Field>
+
+          {/* Password */}
+          <Field label="Password" icon={Lock} required>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => update('password', e.target.value)}
+              placeholder="Create a password"
+              className="input"
+              minLength={6}
             />
           </Field>
 
@@ -208,7 +225,7 @@ export function ApplyPage({ onApplied }: Props) {
               </>
             ) : (
               <>
-                Submit Application <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                Register <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
               </>
             )}
           </button>

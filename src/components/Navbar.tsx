@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Brain, Home, Info, ClipboardList, LayoutGrid, BarChart3, Menu, X } from 'lucide-react';
+import { Brain, Home, Info, ClipboardList, LayoutGrid, BarChart3, LogIn, Menu, X } from 'lucide-react';
 
-export type Page = 'home' | 'about' | 'apply' | 'domains' | 'quiz' | 'status';
+export type Page = 'home' | 'about' | 'apply' | 'login' | 'domains' | 'quiz' | 'status';
 
 interface NavProps {
   page: Page;
@@ -12,7 +12,8 @@ interface NavProps {
 const NAV_ITEMS: { id: Page; label: string; icon: typeof Home }[] = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'about', label: 'About', icon: Info },
-  { id: 'apply', label: 'Apply', icon: ClipboardList },
+  { id: 'apply', label: 'Register', icon: ClipboardList },
+  { id: 'login', label: 'Login', icon: LogIn },
   { id: 'domains', label: 'Domains', icon: LayoutGrid },
   { id: 'status', label: 'Status', icon: BarChart3 },
 ];

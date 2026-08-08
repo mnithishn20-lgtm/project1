@@ -5,6 +5,7 @@ import { HomePage } from '@/pages/HomePage';
 import { AboutPage } from '@/pages/AboutPage';
 import { ApplyPage } from '@/pages/ApplyPage';
 import { DomainsPage } from '@/pages/DomainsPage';
+import { LoginPage } from '@/pages/LoginPage';
 import { QuizPage } from '@/pages/QuizPage';
 import { StatusPage } from '@/pages/StatusPage';
 
@@ -31,6 +32,7 @@ export default function App() {
         {page === 'home' && <HomePage onNavigate={navigate} hasProfile={!!profileId} />}
         {page === 'about' && <AboutPage onNavigate={navigate} />}
         {page === 'apply' && <ApplyPage onApplied={() => navigate('domains')} />}
+        {page === 'login' && <LoginPage onLoggedIn={() => navigate('domains')} />}
         {page === 'domains' && (
           <DomainsPage profileId={profileId} onStartQuiz={() => navigate('quiz')} onNavigate={navigate} />
         )}

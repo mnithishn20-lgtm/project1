@@ -60,6 +60,13 @@ export async function createProfile(payload: Record<string, unknown>) {
   });
 }
 
+export async function login(payload: Record<string, unknown>) {
+  return request<{ id: number }>('/login', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function getProfile(id: string) {
   return request<Profile | null>(`/profiles/${id}`);
 }
