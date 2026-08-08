@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import { fileURLToPath } from 'node:url';
+import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 
 dotenv.config({
   path: fileURLToPath(new URL('.env', import.meta.url)),
@@ -53,6 +54,29 @@ function requireDatabase(_req, res, next) {
   });
 }
 
+
+async function ensureProfileAuthColumns(admin) {
+  const [columns] = await admin.execute(
+    `SELECT COLUMN_NAME
+     FROM INFORMATION_SCHEMA.COLUMNS
+     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'profiles' AND COLUMN_NAME = 'password_hash'`,
+    [dbConfig.database]
+  );
+  if (columns.length === 0) {
+    await admin.query('ALTER TABLE profiles ADD COLUMN password_hash VARCHAR(255) DEFAULT NULL AFTER email');
+  }
+
+  const [indexes] = await admin.execute(
+    `SELECT INDEX_NAME
+     FROM INFORMATION_SCHEMA.STATISTICS
+     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'profiles' AND INDEX_NAME = 'uq_profiles_email'`,
+    [dbConfig.database]
+  );
+  if (indexes.length === 0) {
+    await admin.query('ALTER TABLE profiles ADD UNIQUE KEY uq_profiles_email (email)');
+  }
+}
+
 async function initializeDatabase() {
   const admin = await mysql.createConnection({
     host: dbConfig.host,
@@ -71,13 +95,17 @@ async function initializeDatabase() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
+        password_hash VARCHAR(255) DEFAULT NULL,
         phone VARCHAR(50) DEFAULT NULL,
         education VARCHAR(100) DEFAULT NULL,
         experience VARCHAR(100) DEFAULT NULL,
         domain_interest VARCHAR(100) DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_profiles_email (email)
       )
     `);
+
+    await ensureProfileAuthColumns(admin);
 
     await admin.query(`
       CREATE TABLE IF NOT EXISTS questions (
@@ -142,6 +170,37 @@ async function initializeDatabase() {
   }
 }
 
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function hashPassword(password) {
+  const salt = randomBytes(16).toString('hex');
+  const hash = scryptSync(password, salt, 64).toString('hex');
+  return `${salt}:${hash}`;
+}
+
+function verifyPassword(password, storedHash) {
+  const [salt, key] = String(storedHash || '').split(':');
+  if (!salt || !key) return false;
+  const expected = Buffer.from(key, 'hex');
+  const actual = scryptSync(password, salt, 64);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+function validateAuthPayload(payload) {
+  const email = normalizeEmail(payload.email);
+  const password = String(payload.password || '');
+
+  if (!email) return { error: 'Please enter your Gmail ID.' };
+  if (!/^[^\s@]+@gmail\.com$/i.test(email)) return { error: 'Please enter a valid Gmail ID.' };
+  if (!password) return { error: 'Please enter your password.' };
+  if (password.length < 6) return { error: 'Password must be at least 6 characters.' };
+
+  return { email, password };
+}
+
 app.get('/health', (_req, res) => res.json({
   ok: true,
   database: databaseReady ? 'ready' : 'unavailable',
@@ -152,16 +211,54 @@ app.use(requireDatabase);
 
 app.post('/profiles', async (req, res) => {
   try {
-    console.log('Profile request body:', req.body);
+    console.log('Profile request body:', { ...req.body, password: req.body?.password ? '[redacted]' : undefined });
     const payload = req.body || {};
+    const auth = validateAuthPayload(payload);
+    if (auth.error) {
+      res.status(400).json({ error: auth.error });
+      return;
+    }
+
+    const [existing] = await pool.execute('SELECT id FROM profiles WHERE email = ? LIMIT 1', [auth.email]);
+    if (existing.length > 0) {
+      res.status(409).json({ error: 'Already registered with this Gmail ID. Please login instead.' });
+      return;
+    }
+
     const [result] = await pool.execute(
-      'INSERT INTO profiles (name, email, phone, education, experience, domain_interest) VALUES (?, ?, ?, ?, ?, ?)',
-      [payload.name, payload.email, payload.phone || null, payload.education, payload.experience, payload.domain_interest]
+      'INSERT INTO profiles (name, email, password_hash, phone, education, experience, domain_interest) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [payload.name, auth.email, hashPassword(auth.password), payload.phone || null, payload.education, payload.experience, payload.domain_interest]
     );
     res.json({ id: result.insertId });
   } catch (err) {
     console.error('Profile insert failed:', err);
-    res.status(500).json({ error: 'Failed to create profile', detail: err instanceof Error ? err.message : String(err) });
+    const duplicate = err && typeof err === 'object' && 'code' in err && err.code === 'ER_DUP_ENTRY';
+    res.status(duplicate ? 409 : 500).json({
+      error: duplicate ? 'Already registered with this Gmail ID. Please login instead.' : 'Failed to create profile',
+      detail: duplicate ? undefined : err instanceof Error ? err.message : String(err),
+    });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  try {
+    const auth = validateAuthPayload(req.body || {});
+    if (auth.error) {
+      res.status(400).json({ error: auth.error });
+      return;
+    }
+
+    const [rows] = await pool.execute('SELECT id, password_hash FROM profiles WHERE email = ? LIMIT 1', [auth.email]);
+    const user = rows[0];
+    if (!user || !verifyPassword(auth.password, user.password_hash)) {
+      res.status(401).json({ error: 'Invalid Gmail ID or password.' });
+      return;
+    }
+
+    res.json({ id: user.id });
+  } catch (err) {
+    console.error('Login failed:', err);
+    res.status(500).json({ error: 'Failed to login', detail: err instanceof Error ? err.message : String(err) });
   }
 });
 

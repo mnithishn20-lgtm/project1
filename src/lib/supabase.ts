@@ -38,6 +38,7 @@ export interface Profile {
   id: string;
   name: string;
   email: string;
+  password_hash?: string;
   phone: string | null;
   education: string | null;
   experience: string | null;
