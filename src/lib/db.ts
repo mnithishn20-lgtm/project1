@@ -72,6 +72,16 @@ export async function getQuestionsByDomain(domain: string) {
   return request<Question[]>(`/questions/domain/${encodeURIComponent(domain)}`);
 }
 
+export async function getFreshQuestionsByDomain(domain: string, profileId: string, date: string, limit: number) {
+  const params = new URLSearchParams({
+    profileId,
+    date,
+    limit: String(limit),
+  });
+
+  return request<Question[]>(`/questions/domain/${encodeURIComponent(domain)}/fresh?${params.toString()}`);
+}
+
 export async function saveAttempt(payload: Record<string, unknown>) {
   return request('/quiz-attempts', {
     method: 'POST',
