@@ -159,7 +159,7 @@ DROP POLICY IF EXISTS "anon_delete_stats" ON user_stats;
 CREATE POLICY "anon_delete_stats" ON user_stats FOR DELETE
   TO anon, authenticated USING (true);
 
--- Seed IT questions across 5 domains (10 each = 50 total)
+-- Seed IT questions across 5 domains (20 each = 100 total)
 INSERT INTO questions (domain, question, option_a, option_b, option_c, option_d, correct_answer) VALUES
 -- Programming
 ('Programming', 'Which of the following is NOT a programming paradigm?', 'Object-Oriented', 'Functional', 'Relational', 'Procedural', 'C'),
@@ -215,5 +215,60 @@ INSERT INTO questions (domain, question, option_a, option_b, option_c, option_d,
 ('Cybersecurity', 'What is a "firewall"?', 'A virus scanner', 'A network security system that monitors and controls traffic', 'A backup tool', 'An encryption tool', 'B'),
 ('Cybersecurity', 'What does "MFA" stand for?', 'Multi-Factor Authentication', 'Main File Access', 'Multiple File Allocation', 'Managed File Access', 'A'),
 ('Cybersecurity', 'Which protocol is used for secure web browsing?', 'HTTP', 'HTTPS', 'FTP', 'SMTP', 'B'),
-('Cybersecurity', 'What is "social engineering" in security?', 'Building social networks', 'Manipulating people into divulging confidential info', 'Engineering social media apps', 'A type of malware', 'B')
+('Cybersecurity', 'What is "social engineering" in security?', 'Building social networks', 'Manipulating people into divulging confidential info', 'Engineering social media apps', 'A type of malware', 'B'),
+-- Additional Programming questions
+('Programming', 'Which data structure uses FIFO (First In First Out)?', 'Stack', 'Queue', 'Tree', 'Graph', 'B'),
+('Programming', 'What does API stand for?', 'Application Programming Interface', 'Applied Program Internet', 'Advanced Process Integration', 'Application Protocol Index', 'A'),
+('Programming', 'Which sorting algorithm has average time complexity O(n log n)?', 'Bubble Sort', 'Selection Sort', 'Merge Sort', 'Linear Search', 'C'),
+('Programming', 'What is recursion?', 'A function calling itself', 'A loop that never ends', 'A database query', 'A compiler error', 'A'),
+('Programming', 'Which operator is commonly used for equality without type coercion in JavaScript?', '==', '===', '=', '!=', 'B'),
+('Programming', 'What is a variable?', 'A named storage location for data', 'A fixed hardware device', 'A network address', 'A database table only', 'A'),
+('Programming', 'Which concept hides internal implementation details?', 'Encapsulation', 'Compilation', 'Iteration', 'Serialization', 'A'),
+('Programming', 'What is pseudocode used for?', 'Planning algorithms in human-readable steps', 'Encrypting source code', 'Running code in production', 'Styling web pages', 'A'),
+('Programming', 'Which Git command records staged changes?', 'git push', 'git commit', 'git clone', 'git fetch', 'B'),
+('Programming', 'What does IDE stand for?', 'Integrated Development Environment', 'Internal Data Engine', 'Internet Design Editor', 'Interactive Debug Event', 'A'),
+-- Additional Networking questions
+('Networking', 'Which protocol automatically assigns IP addresses to devices?', 'DNS', 'DHCP', 'SMTP', 'SNMP', 'B'),
+('Networking', 'Which command is commonly used to test reachability to another host?', 'ping', 'mkdir', 'grep', 'chmod', 'A'),
+('Networking', 'What does LAN stand for?', 'Local Area Network', 'Large Access Node', 'Linked Application Network', 'Logical Address Name', 'A'),
+('Networking', 'Which OSI layer provides end-to-end transport services?', 'Physical', 'Data Link', 'Transport', 'Presentation', 'C'),
+('Networking', 'What is the default port for HTTP?', '22', '25', '80', '110', 'C'),
+('Networking', 'Which protocol translates IP addresses to MAC addresses on a local network?', 'ARP', 'DNS', 'HTTP', 'TLS', 'A'),
+('Networking', 'What does SSID identify?', 'A wireless network name', 'A router password only', 'A public IP block', 'A TCP port', 'A'),
+('Networking', 'Which cable type is commonly used for wired Ethernet?', 'Coaxial audio', 'Twisted pair', 'HDMI', 'Fiber only', 'B'),
+('Networking', 'What is packet switching?', 'Breaking data into packets for transmission', 'Changing a keyboard layout', 'Replacing a router battery', 'Compressing images only', 'A'),
+('Networking', 'Which address type is 48 bits and assigned to network interfaces?', 'IPv4 address', 'IPv6 address', 'MAC address', 'Port number', 'C'),
+-- Additional Databases questions
+('Databases', 'Which SQL command adds new rows to a table?', 'INSERT', 'UPDATE', 'ALTER', 'GRANT', 'A'),
+('Databases', 'Which SQL command changes existing rows?', 'SELECT', 'UPDATE', 'CREATE', 'COMMIT', 'B'),
+('Databases', 'What is an index used for?', 'Speeding up data retrieval', 'Deleting duplicate tables', 'Encrypting passwords', 'Formatting text', 'A'),
+('Databases', 'Which relationship uses a junction table?', 'One-to-one', 'One-to-many', 'Many-to-many', 'Self-only', 'C'),
+('Databases', 'What does a foreign key reference?', 'A primary key in another table', 'A CSS selector', 'A file path', 'A memory address', 'A'),
+('Databases', 'Which SQL clause sorts results?', 'WHERE', 'ORDER BY', 'JOIN', 'LIMIT', 'B'),
+('Databases', 'What is a transaction?', 'A group of database operations treated as one unit', 'A table column type', 'A web request header', 'A NoSQL document only', 'A'),
+('Databases', 'Which command permanently saves a transaction?', 'ROLLBACK', 'COMMIT', 'DROP', 'EXPLAIN', 'B'),
+('Databases', 'Which database model stores data as key-value pairs?', 'Relational', 'Key-value', 'Hierarchical only', 'Column header only', 'B'),
+('Databases', 'What does CRUD stand for?', 'Create, Read, Update, Delete', 'Copy, Run, Undo, Deploy', 'Connect, Route, Upload, Download', 'Cache, Render, Use, Debug', 'A'),
+-- Additional Web Development questions
+('Web Development', 'Which CSS property changes text color?', 'font-size', 'color', 'display', 'position', 'B'),
+('Web Development', 'Which JavaScript method parses JSON text?', 'JSON.parse', 'JSON.stringify', 'parseInt', 'Object.keys', 'A'),
+('Web Development', 'Which HTTP status code means Not Found?', '200', '301', '404', '500', 'C'),
+('Web Development', 'What is responsive design?', 'Design that adapts to different screen sizes', 'A server backup method', 'A database schema rule', 'An antivirus feature', 'A'),
+('Web Development', 'Which HTML element loads an external JavaScript file?', '<style>', '<script>', '<link>', '<meta>', 'B'),
+('Web Development', 'Which CSS layout module is one-dimensional?', 'Flexbox', 'Grid', 'Canvas', 'SVG', 'A'),
+('Web Development', 'What does SPA stand for in web apps?', 'Single Page Application', 'Secure Program Access', 'Server Plugin API', 'Styled Page Asset', 'A'),
+('Web Development', 'Which browser API stores key-value data persistently?', 'localStorage', 'fetch', 'Promise', 'MutationObserver', 'A'),
+('Web Development', 'Which React hook runs side effects?', 'useState', 'useEffect', 'useId', 'useReducer', 'B'),
+('Web Development', 'Which HTML attribute provides alternative text for images?', 'src', 'href', 'alt', 'title', 'C'),
+-- Additional Cybersecurity questions
+('Cybersecurity', 'What is malware?', 'Software designed to harm or exploit systems', 'A secure backup copy', 'A database index', 'A network cable', 'A'),
+('Cybersecurity', 'Which practice helps protect accounts if a password is stolen?', 'MFA', 'Using one password everywhere', 'Disabling updates', 'Sharing credentials', 'A'),
+('Cybersecurity', 'What is SQL injection?', 'Injecting malicious SQL through application input', 'Compressing a database', 'Installing SQL software', 'Backing up records', 'A'),
+('Cybersecurity', 'Which protocol encrypts traffic for HTTPS?', 'TLS', 'FTP', 'ARP', 'ICMP', 'A'),
+('Cybersecurity', 'What is the principle of least privilege?', 'Grant only the access needed', 'Give all users admin rights', 'Disable passwords', 'Store data publicly', 'A'),
+('Cybersecurity', 'What is a zero-day vulnerability?', 'A flaw unknown to those who should fix it', 'A password that expires daily', 'A backup made at midnight', 'A firewall rule', 'A'),
+('Cybersecurity', 'Which attack tries many password guesses?', 'Brute force', 'Caching', 'Load balancing', 'Refactoring', 'A'),
+('Cybersecurity', 'What is hashing commonly used for?', 'One-way data fingerprinting such as password storage', 'Rendering HTML', 'Routing packets only', 'Increasing screen brightness', 'A'),
+('Cybersecurity', 'What does antivirus software help detect?', 'Malicious software', 'Broken CSS', 'Slow SQL joins', 'Duplicate files only', 'A'),
+('Cybersecurity', 'Which action is safest before clicking a link in an email?', 'Verify the sender and URL', 'Forward it to everyone', 'Enter credentials immediately', 'Disable the browser', 'A')
 ON CONFLICT DO NOTHING;
