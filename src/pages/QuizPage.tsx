@@ -250,7 +250,7 @@ export function QuizPage({ profileId, onNavigate }: Props) {
         </div>
         <h2 className="text-2xl font-bold text-white">Daily Limit Reached!</h2>
         <p className="mt-2 max-w-sm text-slate-400">
-          You've answered all {DAILY_LIMIT} questions for today. Come back tomorrow for {DAILY_LIMIT} fresh questions.
+          You've completed today's {DAILY_LIMIT}-question quiz. Come back tomorrow for {DAILY_LIMIT} fresh questions.
         </p>
         <div className="mt-6 flex gap-3">
           <button onClick={() => onNavigate('status')} className="rounded-xl bg-sky-500 px-6 py-3 font-semibold text-white">
