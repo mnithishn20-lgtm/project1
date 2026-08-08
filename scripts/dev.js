@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const rootDir = path.dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
-const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const viteCliPath = path.join(rootDir, 'node_modules', 'vite', 'bin', 'vite.js');
 
 const processes = [
   {
@@ -13,8 +13,8 @@ const processes = [
   },
   {
     name: 'web',
-    command: npmCommand,
-    args: ['run', 'dev:web'],
+    command: process.execPath,
+    args: [viteCliPath],
   },
 ];
 
