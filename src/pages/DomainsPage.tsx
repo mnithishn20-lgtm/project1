@@ -86,7 +86,7 @@ export function DomainsPage({ profileId, onStartQuiz, onNavigate }: Props) {
           <h1 className="mt-5 text-3xl font-bold text-white sm:text-4xl">
             Welcome back, <span className="text-sky-400">{profile.name.split(' ')[0]}</span>
           </h1>
-          <p className="mt-3 text-slate-400">Pick a domain to start today's quiz. You get 20 fresh questions per day.</p>
+          <p className="mt-3 text-slate-400">Pick a domain to start today's quiz. Complete 20 fresh questions each day.</p>
         </div>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

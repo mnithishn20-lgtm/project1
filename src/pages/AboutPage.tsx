@@ -37,7 +37,7 @@ export function AboutPage({ onNavigate }: Props) {
               <h2 className="text-xl font-bold text-white">Our Mission</h2>
               <p className="mt-2 text-slate-400">
                 We believe consistent, bite-sized practice beats cramming. By giving you 20 fresh,
-                non-repeating questions every day, QuizIT turns learning into a habit you actually enjoy.
+                non-repeating questions to complete each day, QuizIT turns learning into a habit you actually enjoy.
               </p>
             </div>
           </div>
@@ -50,7 +50,7 @@ export function AboutPage({ onNavigate }: Props) {
             {[
               { icon: Layers, step: '1', title: 'Fill the Application Form', desc: 'Tell us a bit about yourself — your education, experience, and the IT domain that interests you most.' },
               { icon: BookOpen, step: '2', title: 'Pick a Domain', desc: 'Choose from Programming, Networking, Databases, Web Development, or Cybersecurity.' },
-              { icon: CalendarCheck, step: '3', title: 'Answer 20 Questions', desc: 'Each day you get 20 fresh questions. They never repeat the same day, so every session is new.' },
+              { icon: CalendarCheck, step: '3', title: 'Complete 20 Questions Daily', desc: 'Finish 20 fresh questions in one day. They never repeat the same day, so every session is new.' },
               { icon: Trophy, step: '4', title: 'Track Your Progress', desc: 'Watch your total marks, accuracy, and streak grow on your status dashboard.' },
             ].map((s) => {
               const Icon = s.icon;

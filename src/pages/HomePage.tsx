@@ -25,7 +25,7 @@ export function HomePage({ onNavigate, hasProfile }: Props) {
         <div className="mx-auto max-w-5xl px-5 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1.5 text-xs font-semibold text-sky-300">
             <Sparkles size={14} />
-            5 IT Domains · 50+ Questions · 20 Daily
+            5 IT Domains · 50+ Questions · Complete 20 Questions Daily
           </div>
           <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl">
             Master IT with a
@@ -61,7 +61,7 @@ export function HomePage({ onNavigate, hasProfile }: Props) {
           {[
             { icon: Flame, title: 'Daily Streaks', desc: 'Answer questions every day to keep your streak alive and growing.', color: 'text-orange-400 bg-orange-500/10' },
             { icon: Trophy, title: 'Total Marks', desc: 'Earn 5 marks per correct answer and climb your personal scoreboard.', color: 'text-amber-400 bg-amber-500/10' },
-            { icon: CalendarCheck, title: '20 Per Day', desc: 'Fresh, non-repeating questions each day — never the same twice.', color: 'text-emerald-400 bg-emerald-500/10' },
+            { icon: CalendarCheck, title: 'Complete 20 Questions', desc: 'Finish 20 fresh, non-repeating questions each day to complete your daily quiz.', color: 'text-emerald-400 bg-emerald-500/10' },
           ].map((f) => {
             const Icon = f.icon;
             return (
