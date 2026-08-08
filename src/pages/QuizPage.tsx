@@ -12,7 +12,7 @@ import {
   getSessionTimes,
   type Question,
 } from '@/lib/supabase';
-import { getDailyProgress, getQuestionsByDomain, saveAttempt, saveDailyProgress, saveUserStats, getUserStats } from '@/lib/db';
+import { getDailyProgress, getFreshQuestionsByDomain, saveAttempt, saveDailyProgress, saveUserStats, getUserStats } from '@/lib/db';
 import { getQuizDomain } from '@/lib/quizDomain';
 
 interface Props {
@@ -154,18 +154,16 @@ export function QuizPage({ profileId, onNavigate }: Props) {
           return;
         }
 
-        const allQs = await getQuestionsByDomain(dom);
-
-        const remaining = allQs ?? [];
-        const shuffled = [...remaining].sort(() => Math.random() - 0.5);
-        const available = Math.min(DAILY_LIMIT - todayCount, shuffled.length);
+        const questionsNeeded = DAILY_LIMIT - todayCount;
+        const freshQuestions = await getFreshQuestionsByDomain(dom, pid, todayStr, questionsNeeded);
+        const available = Math.min(questionsNeeded, freshQuestions.length);
 
         if (available === 0) {
           setPhase('locked');
           return;
         }
 
-        setQuestions(shuffled.slice(0, available));
+        setQuestions(freshQuestions.slice(0, available));
         setPhase('playing');
       } catch (err) {
         console.error('Quiz load error:', err);

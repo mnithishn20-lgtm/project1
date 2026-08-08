@@ -185,6 +185,43 @@ app.get('/questions', async (_req, res) => {
   }
 });
 
+app.get('/questions/domain/:domain/fresh', async (req, res) => {
+  try {
+    const profileId = String(req.query.profileId || '').trim();
+    const date = String(req.query.date || '').trim();
+    const requestedLimit = Number(req.query.limit || 20);
+    const limit = Number.isFinite(requestedLimit)
+      ? Math.max(1, Math.min(Math.floor(requestedLimit), 100))
+      : 20;
+
+    if (!profileId || !date) {
+      res.status(400).json({ error: 'Missing required query parameters: profileId and date' });
+      return;
+    }
+
+    const [rows] = await pool.execute(
+      `SELECT q.*
+       FROM questions q
+       WHERE q.domain = ?
+         AND NOT EXISTS (
+           SELECT 1
+           FROM quiz_attempts qa
+           WHERE qa.question_id = q.id
+             AND qa.profile_id = ?
+             AND DATE(qa.attempted_at) = ?
+         )
+       ORDER BY RAND()
+       LIMIT ${limit}`,
+      [req.params.domain, profileId, date]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error('Fresh domain question fetch failed:', err);
+    res.status(500).json({ error: 'Failed to load fresh questions', detail: err instanceof Error ? err.message : String(err) });
+  }
+});
+
 app.get('/questions/domain/:domain', async (req, res) => {
   try {
     const [rows] = await pool.execute('SELECT * FROM questions WHERE domain = ?', [req.params.domain]);
