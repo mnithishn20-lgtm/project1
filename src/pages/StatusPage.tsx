@@ -18,24 +18,39 @@ export function StatusPage({ profileId, onNavigate }: Props) {
 
   useEffect(() => {
     const pid = getProfileId();
-    if (!pid) {
+    const activePid = profileId ?? pid;
+
+    if (!activePid) {
+      setProfile(null);
+      setStats(null);
+      setDaily([]);
+      setTodayCount(0);
       setLoading(false);
       return;
     }
+
     void (async () => {
       try {
-        const prof = await getProfile(pid);
+        setLoading(true);
+
+        const prof = await getProfile(activePid);
         setProfile(prof as Profile | null);
 
-        const st = await getUserStats(pid);
+        const st = await getUserStats(activePid);
         setStats(st as UserStats | null);
 
-        const progress = await getDailyProgress(pid);
+        const progress = await getDailyProgress(activePid);
         setDaily(progress);
 
         const today = new Date().toISOString().split('T')[0];
         const todayProgress = progress.find((dp) => dp.date === today);
         setTodayCount(todayProgress?.questions_answered ?? 0);
+      } catch (err) {
+        console.error('Status load failed:', err);
+        setProfile(null);
+        setStats(null);
+        setDaily([]);
+        setTodayCount(0);
       } finally {
         setLoading(false);
       }
@@ -50,7 +65,9 @@ export function StatusPage({ profileId, onNavigate }: Props) {
     );
   }
 
-  if (!profileId || !profile) {
+  const activeProfileId = profileId ?? getProfileId();
+
+  if (!activeProfileId || !profile) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-5 pt-20 text-center">
         <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/15">

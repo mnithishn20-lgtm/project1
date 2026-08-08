@@ -99,10 +99,18 @@ export function getProfileId(): string | null {
 
 export function setProfileId(id: string) {
   localStorage.setItem(PROFILE_KEY, id);
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('quiz-profile-changed', { detail: { profileId: id } }));
+  }
 }
 
 export function clearProfileId() {
   localStorage.removeItem(PROFILE_KEY);
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('quiz-profile-changed', { detail: { profileId: null } }));
+  }
 }
 
 // --- Local timing store (persists across sessions) ---

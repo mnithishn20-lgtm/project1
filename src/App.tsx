@@ -15,8 +15,15 @@ export default function App() {
 
   useEffect(() => {
     const onStorage = () => setProfileId(getProfileId());
+    const onProfileChanged = () => setProfileId(getProfileId());
+
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('quiz-profile-changed', onProfileChanged);
+
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('quiz-profile-changed', onProfileChanged);
+    };
   }, []);
 
   const navigate = (p: Page) => {

@@ -77,6 +77,141 @@ async function ensureProfileAuthColumns(admin) {
   }
 }
 
+const QUESTION_BANK = {
+  'Programming': [
+    { question: 'Which data structure uses FIFO ordering?', option_a: 'Stack', option_b: 'Queue', option_c: 'Tree', option_d: 'Heap', correct_answer: 'B' },
+    { question: 'Which keyword declares a block-scoped variable in JavaScript?', option_a: 'var', option_b: 'let', option_c: 'function', option_d: 'class', correct_answer: 'B' },
+    { question: 'Which language feature allows a function to access variables from its outer scope?', option_a: 'Compilation', option_b: 'Closure', option_c: 'Indexing', option_d: 'Mutation', correct_answer: 'B' },
+    { question: 'What does OOP stand for?', option_a: 'Object Oriented Programming', option_b: 'Online Output Process', option_c: 'Ordered Object Pattern', option_d: 'Open Operation Procedure', correct_answer: 'A' },
+    { question: 'Which search algorithm repeatedly halves the search range?', option_a: 'Linear search', option_b: 'Binary search', option_c: 'Bubble sort', option_d: 'Depth-first search', correct_answer: 'B' },
+    { question: 'Which command is used to commit saved git changes?', option_a: 'git push', option_b: 'git commit', option_c: 'git clone', option_d: 'git fetch', correct_answer: 'B' },
+    { question: 'What is recursion?', option_a: 'A function calling itself', option_b: 'A CSS rule', option_c: 'A SQL update', option_d: 'A database index', correct_answer: 'A' },
+    { question: 'Which of these is a statically typed language?', option_a: 'Python', option_b: 'JavaScript', option_c: 'Java', option_d: 'Ruby', correct_answer: 'C' },
+    { question: 'Which operator in JavaScript checks both type and value equality?', option_a: '==', option_b: '===', option_c: '=', option_d: '!=', correct_answer: 'B' },
+    { question: 'What does API stand for?', option_a: 'Application Programming Interface', option_b: 'Array Process Instruction', option_c: 'Applied Protocol Index', option_d: 'Automatic Program Integration', correct_answer: 'A' },
+    { question: 'Which of the following is a high-level language?', option_a: 'Assembly', option_b: 'C', option_c: 'Python', option_d: 'Machine code', correct_answer: 'C' },
+    { question: 'Which programming concept hides internal implementation details?', option_a: 'Encapsulation', option_b: 'Iteration', option_c: 'Parsing', option_d: 'Recursion', correct_answer: 'A' },
+    { question: 'Which data structure follows Last In First Out?', option_a: 'Queue', option_b: 'Set', option_c: 'Stack', option_d: 'Graph', correct_answer: 'C' },
+    { question: 'Which HTML element is commonly used to create a button?', option_a: '<button>', option_b: '<link>', option_c: '<input>', option_d: '<table>', correct_answer: 'A' },
+    { question: 'Which step in the software lifecycle usually comes after coding?', option_a: 'Design', option_b: 'Testing', option_c: 'Deployment', option_d: 'Maintenance', correct_answer: 'B' },
+    { question: 'Which collection stores unique values?', option_a: 'Array', option_b: 'Set', option_c: 'Map', option_d: 'Object', correct_answer: 'B' },
+    { question: 'Which symbol is used for a single-line comment in JavaScript?', option_a: '#', option_b: '//', option_c: '--', option_d: '/* */', correct_answer: 'B' },
+    { question: 'Which of these is a framework?', option_a: 'React', option_b: 'MySQL', option_c: 'Linux', option_d: 'HTTP', correct_answer: 'A' },
+    { question: 'Which code structure repeats until a condition is false?', option_a: 'Loop', option_b: 'Array', option_c: 'Object', option_d: 'Function', correct_answer: 'A' },
+    { question: 'Which data format is commonly used for web APIs?', option_a: 'XML', option_b: 'JSON', option_c: 'CSV', option_d: 'YAML', correct_answer: 'B' }
+  ],
+  'Networking': [
+    { question: 'What does IP stand for?', option_a: 'Internal Path', option_b: 'Internet Protocol', option_c: 'Instruction Pointer', option_d: 'Interchange Packet', correct_answer: 'B' },
+    { question: 'Which protocol is connection-oriented?', option_a: 'UDP', option_b: 'TCP', option_c: 'ICMP', option_d: 'ARP', correct_answer: 'B' },
+    { question: 'What is the default port for HTTPS?', option_a: '21', option_b: '25', option_c: '80', option_d: '443', correct_answer: 'D' },
+    { question: 'Which layer of the OSI model handles routing?', option_a: 'Data Link', option_b: 'Network', option_c: 'Transport', option_d: 'Session', correct_answer: 'B' },
+    { question: 'Which device connects networks and routes traffic?', option_a: 'Router', option_b: 'Switch', option_c: 'Hub', option_d: 'Repeater', correct_answer: 'A' },
+    { question: 'Which protocol resolves domain names to IP addresses?', option_a: 'DNS', option_b: 'DHCP', option_c: 'FTP', option_d: 'SMTP', correct_answer: 'A' },
+    { question: 'What does DHCP do?', option_a: 'Routes web traffic', option_b: 'Assigns IP addresses dynamically', option_c: 'Encrypts files', option_d: 'Runs databases', correct_answer: 'B' },
+    { question: 'Which protocol is used for sending mail?', option_a: 'SMTP', option_b: 'HTTP', option_c: 'POP3', option_d: 'SSH', correct_answer: 'A' },
+    { question: 'What is a MAC address?', option_a: 'A network interface identifier', option_b: 'A website domain', option_c: 'A file storage path', option_d: 'A routing table', correct_answer: 'A' },
+    { question: 'Which network topology connects all devices to one central cable?', option_a: 'Star', option_b: 'Bus', option_c: 'Mesh', option_d: 'Ring', correct_answer: 'B' },
+    { question: 'Which OSI layer deals with cables and electrical signaling?', option_a: 'Presentation', option_b: 'Physical', option_c: 'Application', option_d: 'Transport', correct_answer: 'B' },
+    { question: 'What does NAT stand for?', option_a: 'Network Access Token', option_b: 'Node Application Table', option_c: 'Network Address Translation', option_d: 'Normal Access Technique', correct_answer: 'C' },
+    { question: 'Which protocol is used for secure remote shell access?', option_a: 'FTP', option_b: 'SSH', option_c: 'SMTP', option_d: 'HTTP', correct_answer: 'B' },
+    { question: 'Which address is 32 bits long?', option_a: 'IPv6', option_b: 'IPv4', option_c: 'MAC', option_d: 'Subnet mask', correct_answer: 'B' },
+    { question: 'Which tool tests connectivity to a host?', option_a: 'ping', option_b: 'ls', option_c: 'grep', option_d: 'tail', correct_answer: 'A' },
+    { question: 'Which of these is a private IP range?', option_a: '172.16.0.0/12', option_b: '8.8.8.8', option_c: '1.1.1.1', option_d: '198.51.100.1', correct_answer: 'A' },
+    { question: 'What is a LAN?', option_a: 'Local Area Network', option_b: 'Long Access Node', option_c: 'Link Access Number', option_d: 'Logical Application Name', correct_answer: 'A' },
+    { question: 'Which type of cable is most common for Ethernet?', option_a: 'Twisted pair', option_b: 'Parallel cable', option_c: 'USB cable', option_d: 'VGA cable', correct_answer: 'A' },
+    { question: 'What does a switch primarily do?', option_a: 'Forward packets within a LAN', option_b: 'Display websites', option_c: 'Store passwords', option_d: 'Generate scripts', correct_answer: 'A' },
+    { question: 'Which protocol sends data without guaranteeing delivery?', option_a: 'TCP', option_b: 'UDP', option_c: 'TLS', option_d: 'HTTP', correct_answer: 'B' }
+  ],
+  'Databases': [
+    { question: 'What does SQL stand for?', option_a: 'Simple Query Language', option_b: 'Structured Query Language', option_c: 'Sequential Query Logic', option_d: 'Standard Query List', correct_answer: 'B' },
+    { question: 'Which key uniquely identifies a row?', option_a: 'Foreign key', option_b: 'Primary key', option_c: 'Index', option_d: 'Column name', correct_answer: 'B' },
+    { question: 'Which SQL command returns rows from a table?', option_a: 'UPDATE', option_b: 'DELETE', option_c: 'SELECT', option_d: 'DROP', correct_answer: 'C' },
+    { question: 'What is a foreign key?', option_a: 'A key in another table', option_b: 'A local file key', option_c: 'A hashing function', option_d: 'A JSON parser', correct_answer: 'A' },
+    { question: 'Which SQL clause filters rows?', option_a: 'WHERE', option_b: 'FROM', option_c: 'JOIN', option_d: 'VALUES', correct_answer: 'A' },
+    { question: 'What is normalization?', option_a: 'A way to organize data to reduce redundancy', option_b: 'A type of network', option_c: 'A programming loop', option_d: 'A browser API', correct_answer: 'A' },
+    { question: 'Which join returns matching rows from both tables?', option_a: 'INNER JOIN', option_b: 'LEFT JOIN', option_c: 'RIGHT JOIN', option_d: 'FULL JOIN', correct_answer: 'A' },
+    { question: 'Which SQL command inserts new records?', option_a: 'INSERT', option_b: 'UPDATE', option_c: 'ALTER', option_d: 'DELETE', correct_answer: 'A' },
+    { question: 'What is an index used for?', option_a: 'Speeding up data retrieval', option_b: 'Rendering UI', option_c: 'Authenticating users', option_d: 'DNS routing', correct_answer: 'A' },
+    { question: 'Which SQL command removes rows from a table?', option_a: 'DELETE', option_b: 'SELECT', option_c: 'INSERT', option_d: 'COMMIT', correct_answer: 'A' },
+    { question: 'What does ACID stand for?', option_a: 'Atomicity, Consistency, Isolation, Durability', option_b: 'Access, Control, Index, Data', option_c: 'Application, Calculation, Index, Data', option_d: 'Access, Columns, Input, Delete', correct_answer: 'A' },
+    { question: 'Which operation occurs in a transaction?', option_a: 'A complete atomic unit', option_b: 'A browser render', option_c: 'A network ping', option_d: 'A CSS animation', correct_answer: 'A' },
+    { question: 'Which SQL keyword removes duplicates in results?', option_a: 'UNIQUE', option_b: 'DISTINCT', option_c: 'FILTER', option_d: 'INDEX', correct_answer: 'B' },
+    { question: 'Which type of database stores rows and columns?', option_a: 'Relational', option_b: 'NoSQL key-value', option_c: 'Graph only', option_d: 'Binary', correct_answer: 'A' },
+    { question: 'What does CRUD stand for?', option_a: 'Create, Read, Update, Delete', option_b: 'Code, Run, Upload, Debug', option_c: 'Connect, Route, Upload, Disconnect', option_d: 'Choose, Read, Use, Destroy', correct_answer: 'A' },
+    { question: 'Which SQL command changes existing values?', option_a: 'UPDATE', option_b: 'DROP', option_c: 'ALTER', option_d: 'ABOUT', correct_answer: 'A' },
+    { question: 'Which transaction command finalizes a transaction?', option_a: 'COMMIT', option_b: 'ROLLBACK', option_c: 'DELETE', option_d: 'MERGE', correct_answer: 'A' },
+    { question: 'Which database model is document-based?', option_a: 'MongoDB', option_b: 'MySQL', option_c: 'Oracle', option_d: 'SQLite', correct_answer: 'A' },
+    { question: 'Which SQL clause sorts result rows?', option_a: 'WHERE', option_b: 'ORDER BY', option_c: 'SELECT', option_d: 'FROM', correct_answer: 'B' },
+    { question: 'What is a view in SQL?', option_a: 'A virtual table derived from a query', option_b: 'A data type', option_c: 'A file extension', option_d: 'A CSS rule', correct_answer: 'A' }
+  ],
+  'Web Development': [
+    { question: 'What does HTML stand for?', option_a: 'HyperText Markup Language', option_b: 'HighText Machine Logic', option_c: 'Home Tool Markup Language', option_d: 'HyperTag Machine List', correct_answer: 'A' },
+    { question: 'Which CSS property controls text color?', option_a: 'font-size', option_b: 'color', option_c: 'margin', option_d: 'width', correct_answer: 'B' },
+    { question: 'Which tag is used for the largest heading in HTML?', option_a: '<h6>', option_b: '<h1>', option_c: '<p>', option_d: '<div>', correct_answer: 'B' },
+    { question: 'What does DOM stand for?', option_a: 'Document Object Model', option_b: 'Data Option Map', option_c: 'Dynamic Object Memory', option_d: 'Document Output Method', correct_answer: 'A' },
+    { question: 'Which HTTP method is commonly used to retrieve data?', option_a: 'POST', option_b: 'GET', option_c: 'PUT', option_d: 'DELETE', correct_answer: 'B' },
+    { question: 'What is CORS?', option_a: 'Cross-Origin Resource Sharing', option_b: 'Client-Oriented Render System', option_c: 'Canvas Object Rendering Schema', option_d: 'Content Output Routing Structure', correct_answer: 'A' },
+    { question: 'Which CSS layout model is two-dimensional?', option_a: 'Flexbox', option_b: 'Grid', option_c: 'Table', option_d: 'Float', correct_answer: 'B' },
+    { question: 'What does AJAX allow?', option_a: 'Async page updates', option_b: 'Static file backups', option_c: 'Database locking', option_d: 'Binary storage', correct_answer: 'A' },
+    { question: 'Which attribute in HTML marks an input as required?', option_a: 'mandatory', option_b: 'required', option_c: 'checked', option_d: 'hidden', correct_answer: 'B' },
+    { question: 'Which React hook manages state?', option_a: 'useState', option_b: 'useFetch', option_c: 'useStorage', option_d: 'useMap', correct_answer: 'A' },
+    { question: 'Which CSS unit is relative to the root font size?', option_a: 'em', option_b: 'rem', option_c: 'vh', option_d: 'px', correct_answer: 'B' },
+    { question: 'Which tag loads an external JavaScript file?', option_a: '<style>', option_b: '<script>', option_c: '<link>', option_d: '<head>', correct_answer: 'B' },
+    { question: 'What does CSS stand for?', option_a: 'Cascading Style Sheets', option_b: 'Creative Style System', option_c: 'Client Side Syntax', option_d: 'Color Styling Script', correct_answer: 'A' },
+    { question: 'Which HTTP status code means Not Found?', option_a: '200', option_b: '301', option_c: '404', option_d: '500', correct_answer: 'C' },
+    { question: 'What does localStorage provide?', option_a: 'Server-side database access', option_b: 'Persistent browser storage', option_c: 'Network routing', option_d: 'Image optimization', correct_answer: 'B' },
+    { question: 'Which React hook is used for side effects?', option_a: 'useState', option_b: 'useEffect', option_c: 'useLayout', option_d: 'useSelector', correct_answer: 'B' },
+    { question: 'What does SPA stand for?', option_a: 'Single Page Application', option_b: 'Static Page Architecture', option_c: 'Server Page Access', option_d: 'Shared Program API', correct_answer: 'A' },
+    { question: 'Which CSS property adds space inside an element?', option_a: 'padding', option_b: 'border', option_c: 'content', option_d: 'float', correct_answer: 'A' },
+    { question: 'Which HTML attribute provides alternate image text?', option_a: 'alt', option_b: 'src', option_c: 'class', option_d: 'href', correct_answer: 'A' },
+    { question: 'What is responsive design?', option_a: 'Design that adapts to screen size', option_b: 'A data backup method', option_c: 'A database index', option_d: 'A transport protocol', correct_answer: 'A' }
+  ],
+  'Cybersecurity': [
+    { question: 'What does VPN stand for?', option_a: 'Virtual Private Network', option_b: 'Verified Public Node', option_c: 'Virtual Process Network', option_d: 'Visual Program Network', correct_answer: 'A' },
+    { question: 'Which attack tricks users into revealing information?', option_a: 'Phishing', option_b: 'Compression', option_c: 'Caching', option_d: 'Ping sweep', correct_answer: 'A' },
+    { question: 'What is encryption?', option_a: 'Converting data into unreadable form', option_b: 'A browser rendering API', option_c: 'A network routing method', option_d: 'A database command', correct_answer: 'A' },
+    { question: 'What does MFA stand for?', option_a: 'Multi-Factor Authentication', option_b: 'Main File Access', option_c: 'Managed Firewall Access', option_d: 'Multi-Frequency Algorithm', correct_answer: 'A' },
+    { question: 'Which protocol protects secure web traffic?', option_a: 'HTTP', option_b: 'HTTPS', option_c: 'SMTP', option_d: 'FTP', correct_answer: 'B' },
+    { question: 'What is a firewall?', option_a: 'A network security control', option_b: 'A CPU cache', option_c: 'A stylesheet', option_d: 'A text editor', correct_answer: 'A' },
+    { question: 'Which attack floods a server with traffic?', option_a: 'Phishing', option_b: 'DDoS', option_c: 'Keylogger', option_d: 'Buffering', correct_answer: 'B' },
+    { question: 'What is malware?', option_a: 'A harmful software program', option_b: 'An HTML tag', option_c: 'A database schema', option_d: 'A CSS parser', correct_answer: 'A' },
+    { question: 'What is hashing used for?', option_a: 'One-way password storage and integrity checks', option_b: 'Creating UI themes', option_c: 'Downloading files', option_d: 'Layout calculations', correct_answer: 'A' },
+    { question: 'What is social engineering?', option_a: 'Manipulating users into revealing secrets', option_b: 'Compressing files', option_c: 'Resetting hashes', option_d: 'Encrypting databases', correct_answer: 'A' },
+    { question: 'Which security principle limits access to only what is needed?', option_a: 'Least privilege', option_b: 'Full access', option_c: 'Open sharing', option_d: 'Privilege escalation', correct_answer: 'A' },
+    { question: 'What is a zero-day vulnerability?', option_a: 'A flaw unknown to vendors or defenders', option_b: 'A daily API update', option_c: 'A browser cache key', option_d: 'A table join', correct_answer: 'A' },
+    { question: 'Which method uses repeated guesses to break a password?', option_a: 'Brute force', option_b: 'CSS layering', option_c: 'Variable declaration', option_d: 'Compression', correct_answer: 'A' },
+    { question: 'What does XSS stand for?', option_a: 'Cross-Site Scripting', option_b: 'XML Secure Shield', option_c: 'Remote File Storage', option_d: 'Extended Session Service', correct_answer: 'A' },
+    { question: 'Which action is safest before clicking an email link?', option_a: 'Verify sender and URL', option_b: 'Send it everywhere', option_c: 'Enter credentials immediately', option_d: 'Disable all security', correct_answer: 'A' },
+    { question: 'What is a credential?', option_a: 'A username/password or key used for access', option_b: 'A CSS animation', option_c: 'A package manager', option_d: 'A UI badge', correct_answer: 'A' },
+    { question: 'What does TLS provide?', option_a: 'Transport Layer Security for encryption', option_b: 'Database storage', option_c: 'Hardware routing', option_d: 'Browser rendering', correct_answer: 'A' },
+    { question: 'Which category of security deals with protecting data while stored?', option_a: 'Data at rest', option_b: 'Packet route', option_c: 'Access plan', option_d: 'Cache layering', correct_answer: 'A' },
+    { question: 'What is a password manager used for?', option_a: 'Generating and storing credentials', option_b: 'Editing HTML files', option_c: 'Sending SMS messages', option_d: 'Running SQL queries', correct_answer: 'A' },
+    { question: 'What is a certificate in cybersecurity?', option_a: 'A digital identity document for secure communication', option_b: 'A firewall DNS table', option_c: 'A CSS property', option_d: 'A deleted user session', correct_answer: 'A' }
+  ]
+};
+
+async function ensureQuestionSeeds(admin) {
+  const domains = Object.keys(QUESTION_BANK);
+
+  for (const domain of domains) {
+    const seedRows = QUESTION_BANK[domain];
+
+    for (const seed of seedRows) {
+      const [existing] = await admin.execute(
+        'SELECT id FROM questions WHERE domain = ? AND question = ? LIMIT 1',
+        [domain, seed.question]
+      );
+
+      if (existing.length === 0) {
+        await admin.execute(
+          'INSERT INTO questions (domain, question, option_a, option_b, option_c, option_d, correct_answer) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [domain, seed.question, seed.option_a, seed.option_b, seed.option_c, seed.option_d, seed.correct_answer]
+        );
+      }
+    }
+  }
+}
+
 async function initializeDatabase() {
   const admin = await mysql.createConnection({
     host: dbConfig.host,
@@ -120,6 +255,8 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    await ensureQuestionSeeds(admin);
 
     await admin.query(`
       CREATE TABLE IF NOT EXISTS quiz_attempts (
