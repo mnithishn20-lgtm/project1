@@ -33,6 +33,26 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
+let databaseReady = false;
+let databaseError = null;
+
+function getDatabaseErrorMessage() {
+  if (!databaseError) return null;
+  return databaseError instanceof Error ? databaseError.message : String(databaseError);
+}
+
+function requireDatabase(_req, res, next) {
+  if (databaseReady) {
+    next();
+    return;
+  }
+
+  res.status(503).json({
+    error: 'Database unavailable',
+    detail: getDatabaseErrorMessage() || 'Database initialization has not completed yet.',
+  });
+}
+
 async function initializeDatabase() {
   const admin = await mysql.createConnection({
     host: dbConfig.host,
@@ -122,7 +142,13 @@ async function initializeDatabase() {
   }
 }
 
-app.get('/health', (_req, res) => res.json({ ok: true }));
+app.get('/health', (_req, res) => res.json({
+  ok: true,
+  database: databaseReady ? 'ready' : 'unavailable',
+  ...(databaseReady ? {} : { detail: getDatabaseErrorMessage() }),
+}));
+
+app.use(requireDatabase);
 
 app.post('/profiles', async (req, res) => {
   try {
@@ -235,14 +261,20 @@ app.put('/user-stats/:profileId', async (req, res) => {
   }
 });
 
-initializeDatabase()
-  .then(() => {
-    const port = Number(process.env.PORT || 3001);
-    app.listen(port, () => {
-      console.log(`MySQL backend listening on http://localhost:${port}`);
+const port = Number(process.env.PORT || 3001);
+
+app.listen(port, () => {
+  console.log(`Backend listening on http://localhost:${port}`);
+
+  initializeDatabase()
+    .then(() => {
+      databaseReady = true;
+      databaseError = null;
+      console.log('Database initialized successfully.');
+    })
+    .catch((err) => {
+      databaseReady = false;
+      databaseError = err;
+      console.error('Database initialization failed; API routes will return 503 until MySQL is available:', err);
     });
-  })
-  .catch((err) => {
-    console.error('Database initialization failed:', err);
-    process.exit(1);
-  });
+});
