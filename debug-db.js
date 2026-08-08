@@ -15,6 +15,17 @@ dotenv.config();
   try {
     const [tables] = await conn.query('SHOW TABLES LIKE "profiles"');
     console.log('profiles table rows:', JSON.stringify(tables));
+
+    const [existing] = await conn.execute(
+      'SELECT id FROM profiles WHERE email = ? LIMIT 1',
+      ['test@example.com']
+    );
+
+    if (existing.length > 0) {
+      console.log('Seed profile already exists:', JSON.stringify(existing[0]));
+      return;
+    }
+
     const [result] = await conn.execute(
       'INSERT INTO profiles (name, email, phone, education, experience, domain_interest) VALUES (?, ?, ?, ?, ?, ?)',
       ['Test', 'test@example.com', '', 'Undergraduate', 'Beginner', 'Programming']

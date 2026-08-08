@@ -171,6 +171,22 @@ async function initializeDatabase() {
 }
 
 
+function isDuplicateKeyError(err) {
+  if (!err || typeof err !== 'object') return false;
+
+  const code = typeof err.code === 'string' ? err.code : '';
+  const errno = Number(err.errno ?? NaN);
+  const message = typeof err.message === 'string' ? err.message : '';
+  const sqlMessage = typeof err.sqlMessage === 'string' ? err.sqlMessage : '';
+
+  return (
+    code === 'ER_DUP_ENTRY' ||
+    errno === 1062 ||
+    /duplicate entry/i.test(message) ||
+    /duplicate entry/i.test(sqlMessage)
+  );
+}
+
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
@@ -232,10 +248,18 @@ app.post('/profiles', async (req, res) => {
     res.json({ id: result.insertId });
   } catch (err) {
     console.error('Profile insert failed:', err);
-    const duplicate = err && typeof err === 'object' && 'code' in err && err.code === 'ER_DUP_ENTRY';
-    res.status(duplicate ? 409 : 500).json({
-      error: duplicate ? 'Already registered with this Gmail ID. Please login instead.' : 'Failed to create profile',
-      detail: duplicate ? undefined : err instanceof Error ? err.message : String(err),
+    const duplicate = isDuplicateKeyError(err);
+
+    if (duplicate) {
+      res.status(409).json({
+        error: 'Already registered with this Gmail ID. Please login instead.',
+      });
+      return;
+    }
+
+    res.status(500).json({
+      error: 'Failed to create profile',
+      detail: err instanceof Error ? err.message : String(err),
     });
   }
 });
